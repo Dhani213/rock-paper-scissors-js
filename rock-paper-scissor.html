@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Rock Paper Scissors Game</title>
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #1e1e2f, #2c2c54);
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding-top: 60px;
+    }
+
+    h1 {
+      margin-bottom: 5px;
+      font-size: 32px;
+    }
+
+    .subtitle {
+      color: #cccccc;
+      margin-bottom: 40px;
+      font-size: 14px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    .move-button {
+      background-color: #ffffff10;
+      border: 3px solid white;
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .move-button:hover {
+      background-color: #ffffff20;
+    }
+
+    .move-icon {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+    }
+
+    .result {
+      font-size: 26px;
+      font-weight: bold;
+      margin-top: 20px;
+      min-height: 30px;
+    }
+
+    .moves {
+      margin-top: 10px;
+      color: #dddddd;
+    }
+
+    .score {
+      margin-top: 15px;
+      font-size: 18px;
+    }
+
+    .reset-button {
+      margin-top: 25px;
+      padding: 10px 18px;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: white;
+      color: #2c2c54;
+      font-weight: bold;
+    }
+
+    .reset-button:hover {
+      background-color: #dddddd;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <h1>🎮 Rock Paper Scissors</h1>
+  <p class="subtitle">Built using HTML, CSS & JavaScript | Beginner Project</p>
+
+  <div class="buttons">
+    <button class="move-button" data-move="rock">
+      <img src="images/rock.png" class="move-icon" alt="Rock">
+    </button>
+
+    <button class="move-button" data-move="paper">
+      <img src="images/paper.png" class="move-icon" alt="Paper">
+    </button>
+
+    <button class="move-button" data-move="scissors">
+      <img src="images/scissors.png" class="move-icon" alt="Scissors">
+    </button>
+  </div>
+
+  <p class="result js-result"></p>
+  <p class="moves js-moves"></p>
+  <p class="score js-score"></p>
+
+  <button class="reset-button" id="reset-btn">
+    Reset Score
+  </button>
+
+  <script>
+    const score = JSON.parse(localStorage.getItem("score")) || {
+      wins: 0,
+      losses: 0,
+      ties: 0
+    };
+
+    updateScoreDisplay();
+
+    document.querySelectorAll(".move-button").forEach(button => {
+      button.addEventListener("click", () => {
+        const playerMove = button.dataset.move;
+        playGame(playerMove);
+      });
+    });
+
+    document.getElementById("reset-btn").addEventListener("click", resetScore);
+
+    function playGame(playerMove) {
+      const computerMove = pickComputerMove();
+      let result = "";
+
+      if (playerMove === computerMove) {
+        result = "It's a Tie!";
+        score.ties++;
+      } 
+      else if (
+        (playerMove === "rock" && computerMove === "scissors") ||
+        (playerMove === "paper" && computerMove === "rock") ||
+        (playerMove === "scissors" && computerMove === "paper")
+      ) {
+        result = "You Win!";
+        score.wins++;
+      } 
+      else {
+        result = "You Lose!";
+        score.losses++;
+      }
+
+      localStorage.setItem("score", JSON.stringify(score));
+
+      document.querySelector(".js-result").textContent = result;
+
+      document.querySelector(".js-moves").textContent =
+        "You chose " + playerMove + 
+        " | Computer chose " + computerMove;
+
+      updateScoreDisplay();
+    }
+
+    function pickComputerMove() {
+      const moves = ["rock", "paper", "scissors"];
+      const randomIndex = Math.floor(Math.random() * 3);
+      return moves[randomIndex];
+    }
+
+    function updateScoreDisplay() {
+      document.querySelector(".js-score").textContent =
+        "Wins: " + score.wins +
+        " | Losses: " + score.losses +
+        " | Ties: " + score.ties;
+    }
+
+    function resetScore() {
+      score.wins = 0;
+      score.losses = 0;
+      score.ties = 0;
+
+      localStorage.removeItem("score");
+      updateScoreDisplay();
+
+      document.querySelector(".js-result").textContent = "";
+      document.querySelector(".js-moves").textContent = "";
+    }
+  </script>
+
+</body>
+</html>
